@@ -7,8 +7,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="LogicLayer" />
-    <orderEntry type="module" module-name="Helpers" />
-    <orderEntry type="module" module-name="DataLayer" />
   </component>
 </module>

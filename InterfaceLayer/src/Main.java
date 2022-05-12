@@ -1,9 +1,8 @@
-import Helpers.Helpers;
-
 import java.io.IOException;
+import java.text.ParseException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
 
         System.out.println("");
         System.out.println("Select action:");
@@ -34,7 +33,7 @@ public class Main {
 
     }
 
-    public static void login() throws IOException{
+    public static void login() throws IOException, ParseException {
         System.out.println("");
         System.out.println("Enter your email");
         System.out.print(">");
@@ -46,7 +45,41 @@ public class Main {
 
         String pass = Helpers.readLine();
 
-        boolean isLoggedIn = Environment.login(email, pass);
+        User user = Environment.login(new UsersData(), email, pass);
+
+        if(user.getEmail().equals("failed_user")){
+            System.out.println("Invalid credentials");
+            Main.login();
+        }
+
+        System.out.println("Welcome "+user.getName());
+        Main.home(user);
+    }
+
+    public static void home(User user) throws IOException, ParseException {
+        System.out.println("");
+        System.out.println("Select action:");
+        System.out.println("1. Create new event");
+        System.out.println("2. ");
+        System.out.print(">");
+
+        String sOption = Helpers.readLine();
+
+        if(!Helpers.isInt(sOption)){
+            System.out.println("Invalid option");
+            Main.home(user);
+        }
+
+        int option = Integer.parseInt(sOption);
+
+        if(option == 1){
+            Event event = user.createEvent();
+            Helpers.readLine();
+        }
+        else{
+            System.out.println("Invalid option");
+            Main.home(user);
+        }
     }
 
 }

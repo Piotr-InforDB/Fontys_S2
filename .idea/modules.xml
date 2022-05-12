@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DataLayer/DataLayer.iml" filepath="$PROJECT_DIR$/DataLayer/DataLayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Helpers/Helpers.iml" filepath="$PROJECT_DIR$/Helpers/Helpers.iml" />
       <module fileurl="file://$PROJECT_DIR$/InterfaceLayer/InterfaceLayer.iml" filepath="$PROJECT_DIR$/InterfaceLayer/InterfaceLayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/LogicLayer/LogicLayer.iml" filepath="$PROJECT_DIR$/LogicLayer/LogicLayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/Tickets.iml" filepath="$PROJECT_DIR$/Tickets.iml" />
