@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.text.ParseException;
 
 public class Main {
+
+    public static Environment environment = new Environment(new EventsData(), new UsersData());
+
     public static void main(String[] args) throws IOException, ParseException {
 
         System.out.println("");
@@ -45,7 +48,7 @@ public class Main {
 
         String pass = Helpers.readLine();
 
-        User user = Environment.login(new UsersData(), email, pass);
+        User user = environment.login(email, pass);
 
         if(user.getEmail().equals("failed_user")){
             System.out.println("Invalid credentials");

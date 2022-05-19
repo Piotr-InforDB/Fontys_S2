@@ -41,8 +41,14 @@ public class User {
         System.out.println("Event location");
         String location = Helpers.readLine();
 
-        return new Event(name, date, start, end, location);
+        Event event =  new Event(name, date, start, end, location);
+
+        return event;
+
     }
+
+
+
 
     public String getName() {
         return name;
