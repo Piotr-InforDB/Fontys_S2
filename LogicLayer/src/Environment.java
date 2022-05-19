@@ -35,6 +35,7 @@ public class Environment {
     }
 
     public Boolean storeEvent(Event event){
+
         try{
            this.events.add(event);
            return true;
