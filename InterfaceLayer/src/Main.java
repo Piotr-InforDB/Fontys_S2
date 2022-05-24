@@ -3,7 +3,8 @@ import java.text.ParseException;
 
 public class Main {
 
-    public static Environment environment = new Environment(new EventsData(), new UsersData());
+    public static Environment environment = new Environment(new UsersData());
+    public static EventsContainer eventsContainer = new EventsContainer(new EventsData(), new TicketTypesData());
 
     public static void main(String[] args) throws IOException, ParseException {
 
@@ -22,16 +23,10 @@ public class Main {
 
         int option = Integer.parseInt(sOption);
 
-        if(option == 1){
-            System.out.println("Selected option: Buy ticket");
-        }
-        else if(option == 2){
-            System.out.println("Selected option: Login");
-            Main.login();
-        }
-        else{
-            System.out.println("Invalid option");
-            Main.main(args);
+        switch (option){
+            case 1 -> System.out.println("Selected option: Buy ticket");
+            case 2 -> Main.login();
+            default -> Main.main(args);
         }
 
     }
@@ -63,7 +58,7 @@ public class Main {
         System.out.println("");
         System.out.println("Select action:");
         System.out.println("1. Create new event");
-        System.out.println("2. ");
+        System.out.println("2. Create new ticket type");
         System.out.print(">");
 
         String sOption = Helpers.readLine();
@@ -76,8 +71,37 @@ public class Main {
         int option = Integer.parseInt(sOption);
 
         if(option == 1){
-            Event event = user.createEvent();
-            Helpers.readLine();
+            Event event = eventsContainer.createEvent();
+            Boolean save = eventsContainer.storeEvent(event);
+            if(save){
+                System.out.println("Event " + event.getName() + " successfully save");
+            }
+            else{
+                System.out.println("Something went wrong, try again");
+            }
+
+            Main.home(user);
+        }
+        if(option == 2){
+            System.out.println("Select event");
+
+            int index = 0;
+            for(Event event : eventsContainer.events){
+                System.out.println((index + 1) + ". " + event.getName());
+            }
+
+            sOption = Helpers.readLine();
+            if(!Helpers.isInt(sOption)){
+                System.out.println("Invalid option");
+                Main.home(user);
+            }
+
+            option = Integer.parseInt(sOption);
+
+
+
+
+            Main.home(user);
         }
         else{
             System.out.println("Invalid option");

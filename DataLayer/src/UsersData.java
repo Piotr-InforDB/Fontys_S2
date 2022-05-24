@@ -1,8 +1,8 @@
-import Interfaces.DataModel;
+import Interfaces.IDataModel;
 
 import java.util.ArrayList;
 
-public class UsersData implements DataModel {
+public class UsersData implements IDataModel {
 
     public ArrayList<User> get(){
 
