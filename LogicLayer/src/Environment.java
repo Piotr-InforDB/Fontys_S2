@@ -1,24 +1,19 @@
-import Interfaces.DataModel;
+import Interfaces.IDataModel;
 
-import java.lang.reflect.Array;
-import java.security.spec.ECField;
 import java.util.ArrayList;
 
 public class Environment {
 
-    private DataModel eventsData;
-    private DataModel usersData;
+    private IDataModel eventsData;
+    private IDataModel usersData;
+    private IDataModel ticketTypesData;
 
-    private ArrayList<Event> events;
     private ArrayList<User> users;
 
-    public Environment(DataModel eventsData, DataModel usersData) {
-
-        this.eventsData = eventsData;
+    public Environment(IDataModel usersData) {
         this.usersData = usersData;
 
 
-        this.events = eventsData.get();
         this.users = usersData.get();
     }
 
@@ -34,15 +29,7 @@ public class Environment {
 
     }
 
-    public Boolean storeEvent(Event event){
-        try{
-           this.events.add(event);
-           return true;
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
+
 
 
 }

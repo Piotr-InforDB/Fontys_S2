@@ -1,9 +1,12 @@
-import java.sql.Time;
+import Interfaces.IDataModel;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
+import java.util.ArrayList;
 
 public class Event {
+
+    private IDataModel ticketTypesData;
 
     private String name;
     private LocalDate date;
@@ -11,8 +14,13 @@ public class Event {
     private LocalTime endTime;
     private String location;
 
+    private ArrayList<TicketType> ticketTypes;
 
-    public Event(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String location) {
+    public Event(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String location, IDataModel ticketTypesData) {
+        this.ticketTypesData = ticketTypesData;
+
+        this.ticketTypes = ticketTypesData.get();
+
         this.name = name;
         this.date = date;
         this.startTime = startTime;
