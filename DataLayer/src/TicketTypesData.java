@@ -10,9 +10,8 @@ public class TicketTypesData implements IDataModel {
 
         ArrayList<TicketType> ticketTypes = new ArrayList<>();
 
-        ticketTypes.add(new TicketType("AhJhdVnyF", false));
-        ticketTypes.add(new TicketType("aDgeASdVG", true));
-
+        ticketTypes.add(new TicketType("Normal", 100, 59.99, false));
+        ticketTypes.add(new TicketType("V.I.P.", 25, 129.99, false));
 
         return ticketTypes;
 

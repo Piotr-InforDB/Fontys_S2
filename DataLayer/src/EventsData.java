@@ -8,8 +8,7 @@ public class EventsData implements IDataModel {
 
     public ArrayList<Event> get(){
 
-//todo change to sql query
-
+        //todo change to sql query
         ArrayList<Event> events = new ArrayList<>();
 
         events.add(new Event("Event 1", LocalDate.parse("2022-01-01"), LocalTime.parse("20:00"), LocalTime.parse("22:00"), "Location", new TicketTypesData()));

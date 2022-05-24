@@ -18,7 +18,6 @@ public class EventsContainer {
         this.ticketTypesData = ticketTypesData;
 
         this.events = eventsData.get();
-
     }
 
     public Event createEvent() throws IOException, ParseException {
@@ -26,16 +25,13 @@ public class EventsContainer {
         String name = Helpers.readLine();
 
         System.out.println("Event date YYYY-mm-dd");
-        String d = Helpers.readLine();
-        LocalDate date = LocalDate.parse(d);
+        LocalDate date = Helpers.readDate();
 
         System.out.println("Start time");
-        String s = Helpers.readLine();
-        LocalTime start = LocalTime.parse(s);
+        LocalTime start = Helpers.readTime();
 
         System.out.println("End time");
-        String e = Helpers.readLine();
-        LocalTime end = LocalTime.parse(e);
+        LocalTime end = Helpers.readTime();
 
         System.out.println("Event location");
         String location = Helpers.readLine();

@@ -5,19 +5,31 @@ import java.time.LocalTime;
 
 public class TicketType {
 
-    private String token;
-    private boolean isPaid;
+    private String name;
+    private int limit;
+    private double price;
+    private boolean isStatic;
 
-    public TicketType(String token, Boolean isPaid) {
-        this.token = token;
-        this.isPaid = isPaid;
+    public TicketType(String name, int limit, double price, boolean isStatic) {
+        this.name = name;
+        this.limit = limit;
+        this.price = price;
+        this.isStatic = isStatic;
     }
 
-    public boolean isPaid() {
-        return isPaid;
+    public String getName() {
+        return name;
     }
 
-    public String getToken() {
-        return token;
+    public int getLimit() {
+        return limit;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 }
