@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class Helpers {
 
     public static String readLine() throws IOException {
+        System.out.print(">");
         return (new BufferedReader(new InputStreamReader(System.in))).readLine();
     }
     public static int readInt() throws IOException {
@@ -28,7 +29,6 @@ public class Helpers {
             String option = Helpers.readLine();
             if(!isDate(option)){
                 System.out.println("Invalid date");
-                System.out.print(">");
                 continue;
             }
             return LocalDate.parse(option);
@@ -39,7 +39,6 @@ public class Helpers {
             String option = Helpers.readLine();
             if(!isTime(option)){
                 System.out.println("Invalid time");
-                System.out.print(">");
                 continue;
             }
             return LocalTime.parse(option);
@@ -50,7 +49,6 @@ public class Helpers {
             String sOption = Helpers.readLine();
             if(!isNumeric(sOption)){
                 System.out.println("Invalid option");
-                System.out.print(">");
                 continue;
             }
             return Double.parseDouble(sOption);
@@ -65,7 +63,6 @@ public class Helpers {
                 }
             }
             System.out.println("Invalid option");
-            System.out.print(">");
         }
     }
 

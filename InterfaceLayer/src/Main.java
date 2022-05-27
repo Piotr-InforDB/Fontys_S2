@@ -12,7 +12,6 @@ public class Main {
         System.out.println("Select action:");
         System.out.println("1. Buy ticket");
         System.out.println("2. Login");
-        System.out.print(">");
 
         ArrayList<String> options = new ArrayList<String>();
         options.add("1");
@@ -21,10 +20,31 @@ public class Main {
         String option = Helpers.readOption(options);
 
         switch (Integer.parseInt(option)){
-            case 1 -> System.out.println("Selected option: Buy ticket");
+            case 1 -> Main.buyTicket();
             case 2 -> Main.login();
             default -> Main.main(args);
         }
+
+    }
+
+    public static void buyTicket() throws IOException {
+        System.out.println();
+        System.out.println("Select an event");
+
+        System.out.println("Select event");
+
+        int index = 1;
+        ArrayList<String> eventOptions = new ArrayList<>();
+        for (Event event : eventsContainer.events) {
+            System.out.println(index + ". " + event.getName());
+            eventOptions.add(Integer.toString(index));
+            index++;
+        }
+
+        String select = Helpers.readOption(eventOptions);
+        Event event = eventsContainer.events.get(Integer.parseInt(select) - 1);
+
+        System.out.println(event.getName());
 
     }
 
@@ -32,11 +52,9 @@ public class Main {
         System.out.println("");
 
         System.out.println("Enter your email");
-        System.out.print(">");
         String email = Helpers.readLine();
 
         System.out.println("Enter your password");
-        System.out.print(">");
         String pass = Helpers.readLine();
 
         User user = environment.login(email, pass);
@@ -54,7 +72,6 @@ public class Main {
         System.out.println("Select action:");
         System.out.println("1. Create new event");
         System.out.println("2. Create new ticket type");
-        System.out.print(">");
 
         int option = Helpers.readInt();
 
