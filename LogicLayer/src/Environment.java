@@ -1,5 +1,3 @@
-import Interfaces.IDataModel;
-
 import java.util.ArrayList;
 
 public class Environment {

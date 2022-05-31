@@ -1,15 +1,13 @@
-import Interfaces.IDataModel;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Event {
 
     private IDataModel ticketTypesData;
     private IDataModel ticketsData;
+    private IDataModel couponsData;
 
     private String name;
     private LocalDate date;
@@ -19,13 +17,25 @@ public class Event {
 
     private ArrayList<TicketType> ticketTypes;
     private ArrayList<Ticket> tickets;
+    private ArrayList<DiscountCoupon> coupons;
 
-    public Event(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String location, IDataModel ticketTypesData, IDataModel ticketsData) {
+    public Event(
+            String name,
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime,
+            String location,
+            IDataModel ticketTypesData,
+            IDataModel ticketsData,
+            IDataModel couponsData
+    ) {
         this.ticketTypesData = ticketTypesData;
         this.ticketsData = ticketsData;
+        this.couponsData = couponsData;
 
-        this.ticketTypes = ticketTypesData.get();
-        this.tickets = ticketsData.get();
+        this.ticketTypes = this.ticketTypesData.get();
+        this.tickets = this.ticketsData.get();
+        this.coupons = this.couponsData.get();
 
         this.name = name;
         this.date = date;
@@ -73,6 +83,25 @@ public class Event {
         }
     }
 
+    public DiscountCoupon createNewDiscountCoupon() throws IOException {
+        System.out.println("Coupon code:");
+        String code = Helpers.readLine();
+
+        System.out.println("Coupon discount percentage:");
+        double discount = Helpers.readDouble();
+
+        return new DiscountCoupon(code, discount);
+    }
+    public Boolean storeDiscountCoupon(DiscountCoupon coupon){
+        try{
+           this.coupons.add(coupon);
+           return true;
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
     public Ticket createTicket() throws IOException {
 
 
@@ -106,8 +135,30 @@ public class Event {
         System.out.println("Date of birth:");
         LocalDate dob = Helpers.readDate();
 
+        System.out.println("Do you have a coupoon?:");
+        System.out.println("1. Yes");
+        System.out.println("2. No");
+
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("1");
+        options.add("2");
+
+        String cOption = Helpers.readOption(options);
+
+        DiscountCoupon coupon = null;
+        if(cOption.equals("1")){
+            System.out.println("Enter your coupon:");
+            String code = Helpers.readLine();
+            for(DiscountCoupon c : this.coupons){
+                if (c.getCode().equals(code)){
+                    coupon = c;
+                    System.out.println("Coupon for "+coupon.getDiscountPercentage()+"% discount has been applied");
+                }
+            }
+        }
+
         Customer customer = new Customer(name, lastname, email, phone, dob);
-        return new Ticket(Helpers.randomString(10), false, customer, type);
+        return new Ticket(Helpers.randomString(10), false, coupon, customer, type);
     }
     public Boolean storeTicket(Ticket ticket){
         try {
