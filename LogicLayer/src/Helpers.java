@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Helpers {
 
@@ -130,5 +131,20 @@ public class Helpers {
         catch (Exception e) {
             return false;
         }
+    }
+
+    public static String randomString(int length){
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        for(int i = 0; i < length; i++) {
+
+            int index = random.nextInt(alphabet.length());
+            char randomChar = alphabet.charAt(index);
+            sb.append(randomChar);
+        }
+        return sb.toString();
     }
 }

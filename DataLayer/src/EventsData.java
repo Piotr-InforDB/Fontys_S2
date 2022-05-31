@@ -11,8 +11,8 @@ public class EventsData implements IDataModel {
         //todo change to sql query
         ArrayList<Event> events = new ArrayList<>();
 
-        events.add(new Event("Event 1", LocalDate.parse("2022-01-01"), LocalTime.parse("20:00"), LocalTime.parse("22:00"), "Location", new TicketTypesData()));
-        events.add(new Event("Event 2", LocalDate.parse("2022-02-02"), LocalTime.parse("21:00"), LocalTime.parse("23:00"), "Location 2", new TicketTypesData()));
+        events.add(new Event("Event 1", LocalDate.parse("2022-01-01"), LocalTime.parse("20:00"), LocalTime.parse("22:00"), "Location", new TicketTypesData(), new TicketsData()));
+        events.add(new Event("Event 2", LocalDate.parse("2022-02-02"), LocalTime.parse("21:00"), LocalTime.parse("23:00"), "Location 2", new TicketTypesData(), new TicketsData()));
 
         return events;
 
