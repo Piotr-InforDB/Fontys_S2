@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Main {
 
     public static Environment environment = new Environment(new UsersData());
-    public static EventsContainer eventsContainer = new EventsContainer(new EventsData(), new TicketTypesData(), new TicketsData());
+    public static EventsContainer eventsContainer = new EventsContainer(new EventsData(), new TicketTypesData(), new TicketsData(), new CouponsData());
     public static TicketsManager ticketsManager = new TicketsManager(new TicketsData());
 
     public static void main(String[] args) throws IOException, ParseException {
@@ -50,7 +50,6 @@ public class Main {
             case 3 -> Main.start();
         }
     }
-
     public static void buyTicket() throws IOException, ParseException {
         System.out.println();
         System.out.println("Select an event");
@@ -108,11 +107,15 @@ public class Main {
         Main.tickets();
     }
     public static void showTicket(Event event, Ticket ticket) throws IOException, ParseException {
-        System.out.println("Ticket found");
+        System.out.println(ticket.getCoupon());
+
         System.out.println("");
         System.out.println("--Ticket--");
         System.out.println("Token: " + ticket.getToken());
         System.out.println("Paid: " + (ticket.getPaid() ? "Yes" : "No"));
+        if(ticket.getCoupon() != null){
+            System.out.println("Coupon: " + ticket.getCoupon().getCode() + ", "+ticket.getCoupon().getDiscountPercentage()+"% discount");
+        }
         System.out.println("Ticket type: " + ticket.getType().getName());
         System.out.println("--Event--");
         System.out.println("Name: " + event.getName());
@@ -147,8 +150,10 @@ public class Main {
             ticket.pay();
         }
 
-        Main.start();
+        Main.tickets();
     }
+
+
 
     public static void login() throws IOException, ParseException {
         System.out.println("");
@@ -168,12 +173,11 @@ public class Main {
 
         Main.home(user);
     }
-
     public static void home(User user) throws IOException, ParseException {
         System.out.println("");
         System.out.println("Select action:");
         System.out.println("1. Create new event");
-        System.out.println("2. Create new ticket type");
+        System.out.println("2. Manage events");
         System.out.println("3. Back");
 
         ArrayList<String> options = new ArrayList<String>();
@@ -208,6 +212,7 @@ public class Main {
 
             String select = Helpers.readOption(eventOptions);
             Event event = eventsContainer.events.get(Integer.parseInt(select) - 1);
+            Main.manageEvent(event);
 
             TicketType ticketType = event.createNewTicketType();
             Boolean save = event.storeTicketType(ticketType);
@@ -224,5 +229,53 @@ public class Main {
         else if(option.equals("3")){
             Main.start();
         }
+    }
+
+    public static void manageEvent(Event event) throws IOException, ParseException {
+        System.out.println("");
+        System.out.println("Select action:");
+        System.out.println("1. Create new Ticket type");
+        System.out.println("2. Create new discount coupon");
+        System.out.println("3. Back");
+
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("1");
+        options.add("2");
+        options.add("3");
+        String option = Helpers.readOption(options);
+
+        if(option.equals("1")){
+            TicketType ticketType = event.createNewTicketType();
+            Boolean save = event.storeTicketType(ticketType);
+
+            if(save){
+                System.out.println("Type " + ticketType.getName() + " successfully saved");
+            }
+            else{
+                System.out.println("Something went wrong, try again");
+            }
+
+            Main.manageEvent(event);
+        }
+        else if(option.equals("2")){
+            DiscountCoupon coupon = event.createNewDiscountCoupon();
+            Boolean save = event.storeDiscountCoupon(coupon);
+
+            if(save){
+                System.out.println("Coupon " + coupon.getCode() + " successfully saved");
+            }
+            else{
+                System.out.println("Something went wrong, try again");
+            }
+
+            Main.manageEvent(event);
+        }
+        else{
+            Main.start();
+        }
+
+
+
+
     }
 }

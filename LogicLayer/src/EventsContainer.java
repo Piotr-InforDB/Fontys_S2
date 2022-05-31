@@ -1,5 +1,3 @@
-import Interfaces.IDataModel;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -8,16 +6,23 @@ import java.util.ArrayList;
 
 public class EventsContainer {
 
-    private final IDataModel eventsData;
-    private final IDataModel ticketTypesData;
-    private final IDataModel ticketsData;
+    private IDataModel eventsData;
+    private IDataModel ticketTypesData;
+    private IDataModel ticketsData;
+    private IDataModel couponsData;
 
     public ArrayList<Event> events;
 
-    public EventsContainer(IDataModel eventsData, IDataModel ticketTypesData, IDataModel ticketsData) {
+    public EventsContainer(
+            IDataModel eventsData,
+            IDataModel ticketTypesData,
+            IDataModel ticketsData,
+            IDataModel couponsData
+    ) {
         this.eventsData = eventsData;
         this.ticketTypesData = ticketTypesData;
         this.ticketsData = ticketsData;
+        this.couponsData = couponsData;
 
         this.events = eventsData.get();
     }
@@ -38,7 +43,7 @@ public class EventsContainer {
         System.out.println("Event location");
         String location = Helpers.readLine();
 
-        return  new Event(name, date, start, end, location, this.ticketTypesData, this.ticketsData);
+        return  new Event(name, date, start, end, location, this.ticketTypesData, this.ticketsData, this.couponsData);
     }
     public Boolean storeEvent(Event event){
         try{

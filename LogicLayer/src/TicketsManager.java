@@ -1,5 +1,3 @@
-import Interfaces.IDataModel;
-
 public class TicketsManager {
 
     private IDataModel ticketsData;
