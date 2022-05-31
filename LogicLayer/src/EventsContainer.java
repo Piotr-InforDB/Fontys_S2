@@ -10,12 +10,14 @@ public class EventsContainer {
 
     private final IDataModel eventsData;
     private final IDataModel ticketTypesData;
+    private final IDataModel ticketsData;
 
     public ArrayList<Event> events;
 
-    public EventsContainer(IDataModel eventsData, IDataModel ticketTypesData) {
+    public EventsContainer(IDataModel eventsData, IDataModel ticketTypesData, IDataModel ticketsData) {
         this.eventsData = eventsData;
         this.ticketTypesData = ticketTypesData;
+        this.ticketsData = ticketsData;
 
         this.events = eventsData.get();
     }
@@ -36,7 +38,7 @@ public class EventsContainer {
         System.out.println("Event location");
         String location = Helpers.readLine();
 
-        return  new Event(name, date, start, end, location, this.ticketTypesData);
+        return  new Event(name, date, start, end, location, this.ticketTypesData, this.ticketsData);
     }
     public Boolean storeEvent(Event event){
         try{
@@ -48,5 +50,7 @@ public class EventsContainer {
         }
     }
 
-
+    public ArrayList<Event> getEvents() {
+        return events;
+    }
 }

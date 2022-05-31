@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Event {
 
     private IDataModel ticketTypesData;
+    private IDataModel ticketsData;
 
     private String name;
     private LocalDate date;
@@ -16,11 +18,14 @@ public class Event {
     private String location;
 
     private ArrayList<TicketType> ticketTypes;
+    private ArrayList<Ticket> tickets;
 
-    public Event(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String location, IDataModel ticketTypesData) {
+    public Event(String name, LocalDate date, LocalTime startTime, LocalTime endTime, String location, IDataModel ticketTypesData, IDataModel ticketsData) {
         this.ticketTypesData = ticketTypesData;
+        this.ticketsData = ticketsData;
 
         this.ticketTypes = ticketTypesData.get();
+        this.tickets = ticketsData.get();
 
         this.name = name;
         this.date = date;
@@ -68,6 +73,52 @@ public class Event {
         }
     }
 
+    public Ticket createTicket() throws IOException {
+
+
+        System.out.println("Select a ticket type:");
+
+        int index = 1;
+        ArrayList<String> eventOptions = new ArrayList<>();
+        for (TicketType tp : this.ticketTypes) {
+            System.out.println(index + ". " + tp.getName() + " €"+tp.getPrice());
+            eventOptions.add(Integer.toString(index));
+            index++;
+        }
+
+        String select = Helpers.readOption(eventOptions);
+        TicketType type = this.ticketTypes.get(Integer.parseInt(select) - 1);
+
+        System.out.println(type.getName());
+
+        System.out.println("First name:");
+        String name = Helpers.readLine();
+
+        System.out.println("First name:");
+        String lastname = Helpers.readLine();
+
+        System.out.println("Email:");
+        String email = Helpers.readLine();
+
+        System.out.println("Phone:");
+        String phone = Helpers.readLine();
+
+        System.out.println("Date of birth:");
+        LocalDate dob = Helpers.readDate();
+
+        Customer customer = new Customer(name, lastname, email, phone, dob);
+        return new Ticket(Helpers.randomString(10), false, customer, type);
+    }
+    public Boolean storeTicket(Ticket ticket){
+        try {
+            this.tickets.add(ticket);
+            return true;
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+
 
 
     public String getName() {
@@ -88,6 +139,10 @@ public class Event {
 
     public String getLocation() {
         return location;
+    }
+
+    public ArrayList<Ticket> getTickets() {
+        return tickets;
     }
 }
 

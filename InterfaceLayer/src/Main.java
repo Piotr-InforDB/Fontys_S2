@@ -5,12 +5,17 @@ import java.util.ArrayList;
 public class Main {
 
     public static Environment environment = new Environment(new UsersData());
-    public static EventsContainer eventsContainer = new EventsContainer(new EventsData(), new TicketTypesData());
+    public static EventsContainer eventsContainer = new EventsContainer(new EventsData(), new TicketTypesData(), new TicketsData());
+    public static TicketsManager ticketsManager = new TicketsManager(new TicketsData());
 
     public static void main(String[] args) throws IOException, ParseException {
+        Main.start();
+    }
+
+    public static void start() throws IOException, ParseException {
         System.out.println("");
         System.out.println("Select action:");
-        System.out.println("1. Buy ticket");
+        System.out.println("1. Tickets");
         System.out.println("2. Login");
 
         ArrayList<String> options = new ArrayList<String>();
@@ -20,32 +25,129 @@ public class Main {
         String option = Helpers.readOption(options);
 
         switch (Integer.parseInt(option)){
-            case 1 -> Main.buyTicket();
+            case 1 -> Main.tickets();
             case 2 -> Main.login();
-            default -> Main.main(args);
         }
-
     }
 
-    public static void buyTicket() throws IOException {
+    public static void tickets() throws IOException, ParseException {
+        System.out.println("");
+        System.out.println("Select action:");
+        System.out.println("1. Buy ticket");
+        System.out.println("2. Show ticket info");
+        System.out.println("3. Back");
+
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("1");
+        options.add("2");
+        options.add("3");
+
+        String option = Helpers.readOption(options);
+
+        switch (Integer.parseInt(option)){
+            case 1 -> Main.buyTicket();
+            case 2 -> Main.findTicket();
+            case 3 -> Main.start();
+        }
+    }
+
+    public static void buyTicket() throws IOException, ParseException {
         System.out.println();
         System.out.println("Select an event");
 
-        System.out.println("Select event");
-
         int index = 1;
         ArrayList<String> eventOptions = new ArrayList<>();
-        for (Event event : eventsContainer.events) {
+        for (Event event : eventsContainer.getEvents()) {
             System.out.println(index + ". " + event.getName());
             eventOptions.add(Integer.toString(index));
             index++;
         }
 
         String select = Helpers.readOption(eventOptions);
-        Event event = eventsContainer.events.get(Integer.parseInt(select) - 1);
+        Event event = eventsContainer.getEvents().get(Integer.parseInt(select) - 1);
 
-        System.out.println(event.getName());
+        Ticket ticket = event.createTicket();
+        Boolean save = event.storeTicket(ticket);
 
+        if(!save){
+            System.out.println("Something went wrong, please try again");
+            Main.buyTicket();
+        }
+
+        System.out.println("Ticket has been successfully created, your ticket reference ID is: " + ticket.getToken());
+        System.out.println("Would you like to pay now?");
+        System.out.println("1. Yes");
+        System.out.println("1. No");
+
+
+        ArrayList<String> payOptions = new ArrayList<>();
+        payOptions.add("1");
+        payOptions.add("2");
+
+        String payOption = Helpers.readOption(payOptions);
+
+        if(payOption.equals("1")){
+            ticket.pay();
+        }
+
+        Main.start();
+    }
+    public static void findTicket() throws IOException, ParseException {
+        System.out.println("Input your ticket ID:");
+        String token = Helpers.readLine();
+
+        for(Event event : eventsContainer.getEvents()){
+            for(Ticket ticket : event.getTickets()){
+                System.out.println(ticket.getToken());
+                if(ticket.getToken().equals(token)){
+                    Main.showTicket(event, ticket);
+                }
+            }
+        }
+        System.out.println("Ticket not found!");
+        Main.tickets();
+    }
+    public static void showTicket(Event event, Ticket ticket) throws IOException, ParseException {
+        System.out.println("Ticket found");
+        System.out.println("");
+        System.out.println("--Ticket--");
+        System.out.println("Token: " + ticket.getToken());
+        System.out.println("Paid: " + (ticket.getPaid() ? "Yes" : "No"));
+        System.out.println("Ticket type: " + ticket.getType().getName());
+        System.out.println("--Event--");
+        System.out.println("Name: " + event.getName());
+        System.out.println("Date: " + event.getDate());
+        System.out.println("Time: " + event.getStartTime() + " " + event.getEndTime());
+        System.out.println("Location: " + event.getLocation());
+        System.out.println("--Customer--");
+        System.out.println("Name: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
+        System.out.println("Email: " + ticket.getCustomer().getEmail());
+        System.out.println("Phone: " + ticket.getCustomer().getPhone());
+        System.out.println("Date of birth: " + ticket.getCustomer().getDateOfBirth());
+
+        System.out.println("");
+        System.out.println("Select action:");
+        System.out.println("1. Back");
+        if(!ticket.getPaid()){
+            System.out.println("2. Pay");
+        }
+
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("1");
+        if(!ticket.getPaid()){
+            options.add("2");
+        }
+
+        String option = Helpers.readOption(options);
+
+        if(option.equals("1")){
+            Main.start();
+        }
+        else if(option.equals("2")){
+            ticket.pay();
+        }
+
+        Main.start();
     }
 
     public static void login() throws IOException, ParseException {
@@ -72,10 +174,16 @@ public class Main {
         System.out.println("Select action:");
         System.out.println("1. Create new event");
         System.out.println("2. Create new ticket type");
+        System.out.println("3. Back");
 
-        int option = Helpers.readInt();
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("1");
+        options.add("2");
+        options.add("3");
 
-        if(option == 1){
+        String option = Helpers.readOption(options);
+
+        if(option.equals("1")){
             Event event = eventsContainer.createEvent();
             Boolean save = eventsContainer.storeEvent(event);
             if(save){
@@ -87,7 +195,7 @@ public class Main {
 
             Main.home(user);
         }
-        if(option == 2) {
+        else if(option.equals("2")) {
             System.out.println("Select event");
 
             int index = 1;
@@ -113,10 +221,8 @@ public class Main {
 
             Main.home(user);
         }
-        else{
-            System.out.println("Invalid option");
-            Main.home(user);
+        else if(option.equals("3")){
+            Main.start();
         }
     }
-
 }
