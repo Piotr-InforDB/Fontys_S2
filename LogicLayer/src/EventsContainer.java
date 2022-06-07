@@ -54,6 +54,14 @@ public class EventsContainer {
             return false;
         }
     }
+    public void showEventInfo(Event event){
+        System.out.println("");
+        System.out.println("--Event--");
+        System.out.println("Name: " + event.getName());
+        System.out.println("Date: " + event.getDate());
+        System.out.println("Time: " + event.getStartTime() + " " + event.getEndTime());
+        System.out.println("Location: " + event.getLocation());
+    }
 
     public ArrayList<Event> getEvents() {
         return events;
