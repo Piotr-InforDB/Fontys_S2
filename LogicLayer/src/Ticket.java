@@ -1,14 +1,16 @@
 public class Ticket {
 
     private String token;
-    private Boolean isPaid;
+    private boolean isPaid;
+    private boolean isBeeingRefunded;
     private DiscountCoupon coupon = null;
     private Customer customer;
     private TicketType type;
 
-    public Ticket(String token, Boolean isPaid, DiscountCoupon coupon, Customer customer, TicketType type) {
+    public Ticket(String token, boolean isPaid, boolean isBeeingRefunded, DiscountCoupon coupon, Customer customer, TicketType type) {
         this.token = token;
         this.isPaid = isPaid;
+        this.isBeeingRefunded = isBeeingRefunded;
         this.coupon = coupon;
         this.customer = customer;
         this.type = type;
@@ -20,6 +22,14 @@ public class Ticket {
         double price = calculator.calcNewPrice();
         System.out.println("You can pay € "+price+" for the ticket using this link: " + this.generatePaymentLink());
     }
+    public void refundInit(){
+        this.isBeeingRefunded = true;
+        System.out.println("Refund has been initiated.");
+    }
+    public void refundClose(){
+        this.isBeeingRefunded = false;
+    }
+
     public String generatePaymentLink(){
 //        ToDO  generate real payment link using external payment gateway
         return "www.paymentlink.com/F2TICKETS/" + this.token;
@@ -27,6 +37,10 @@ public class Ticket {
 
     public String getToken() {
         return token;
+    }
+
+    public boolean isBeeingRefunded() {
+        return isBeeingRefunded;
     }
 
     public Boolean getPaid() {

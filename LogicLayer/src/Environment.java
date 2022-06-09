@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Environment {
@@ -25,6 +26,46 @@ public class Environment {
 
         return new User("", "", "failed_user", "", false);
 
+    }
+
+    public User createNewUser() throws IOException {
+        System.out.println("");
+
+        System.out.println("Name:");
+        String name = Helpers.readLine();
+
+        System.out.println("Lastname:");
+        String lastname = Helpers.readLine();
+
+        System.out.println("Email:");
+        String email = Helpers.readLine();
+
+        System.out.println("Password:");
+        String password = Helpers.readLine();
+
+        System.out.println("Is the user an admin:");
+        System.out.println("1. Yes");
+        System.out.println("1. No");
+
+        ArrayList<String> options = new ArrayList<>();
+        options.add("1");
+        options.add("2");
+
+        String option = Helpers.readOption(options);
+
+        boolean isAdmin = option.equals("1");
+
+
+        return new User(name, lastname, email, Helpers.hash(password), isAdmin);
+    }
+    public boolean storeUser(User user){
+        try{
+            this.users.add(user);
+            return true;
+        }
+        catch(Exception e){
+            return false;
+        }
     }
 
 

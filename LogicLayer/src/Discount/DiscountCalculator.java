@@ -24,7 +24,7 @@ public class DiscountCalculator{
         for(IDiscountRule rule : this.rules){
             if(rule.isValid(this.ticket)){
                 price = rule.calcNewPrice(this.ticket);
-            }
+}
         }
 
 

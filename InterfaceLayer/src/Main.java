@@ -37,7 +37,7 @@ public class Main {
         System.out.println("2. Show ticket info");
         System.out.println("3. Back");
 
-        ArrayList<String> options = new ArrayList<String>();
+        ArrayList<String> options = new ArrayList<>();
         options.add("1");
         options.add("2");
         options.add("3");
@@ -97,7 +97,6 @@ public class Main {
 
         for(Event event : eventsContainer.getEvents()){
             for(Ticket ticket : event.getTickets()){
-                System.out.println(ticket.getToken());
                 if(ticket.getToken().equals(token)){
                     Main.showTicket(event, ticket);
                 }
@@ -107,26 +106,17 @@ public class Main {
         Main.tickets();
     }
     public static void showTicket(Event event, Ticket ticket) throws IOException, ParseException {
-        System.out.println(ticket.getCoupon());
-
-        System.out.println("");
-        System.out.println("--Ticket--");
-        System.out.println("Token: " + ticket.getToken());
-        System.out.println("Paid: " + (ticket.getPaid() ? "Yes" : "No"));
-        if(ticket.getCoupon() != null){
-            System.out.println("Coupon: " + ticket.getCoupon().getCode() + ", "+ticket.getCoupon().getDiscountPercentage()+"% discount");
+        if(ticket.isBeeingRefunded()){
+            System.out.println("");
+            System.out.println("---Ticket is currently beeing refunded!---");
         }
-        System.out.println("Ticket type: " + ticket.getType().getName());
-        System.out.println("--Event--");
-        System.out.println("Name: " + event.getName());
-        System.out.println("Date: " + event.getDate());
-        System.out.println("Time: " + event.getStartTime() + " " + event.getEndTime());
-        System.out.println("Location: " + event.getLocation());
-        System.out.println("--Customer--");
-        System.out.println("Name: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
-        System.out.println("Email: " + ticket.getCustomer().getEmail());
-        System.out.println("Phone: " + ticket.getCustomer().getPhone());
-        System.out.println("Date of birth: " + ticket.getCustomer().getDateOfBirth());
+
+        eventsContainer.showEventInfo(event);
+        ticketsManager.showTicketInfo(ticket);
+
+        if(ticket.isBeeingRefunded()){
+            Main.tickets();
+        }
 
         System.out.println("");
         System.out.println("Select action:");
@@ -134,12 +124,13 @@ public class Main {
         if(!ticket.getPaid()){
             System.out.println("2. Pay");
         }
-
-        ArrayList<String> options = new ArrayList<String>();
-        options.add("1");
-        if(!ticket.getPaid()){
-            options.add("2");
+        else{
+            System.out.println("2. Ask for refund");
         }
+
+        ArrayList<String> options = new ArrayList<>();
+        options.add("1");
+        options.add("2");
 
         String option = Helpers.readOption(options);
 
@@ -147,7 +138,12 @@ public class Main {
             Main.start();
         }
         else if(option.equals("2")){
-            ticket.pay();
+            if(!ticket.getPaid()){
+                ticket.pay();
+            }
+            else{
+                ticket.refundInit();
+            }
         }
 
         Main.tickets();
@@ -175,59 +171,101 @@ public class Main {
     }
     public static void home(User user) throws IOException, ParseException {
         System.out.println("");
+        System.out.println("Welcome "+user.getName());
         System.out.println("Select action:");
-        System.out.println("1. Create new event");
-        System.out.println("2. Manage events");
-        System.out.println("3. Back");
+        System.out.println("1. Back");
+        System.out.println("2. Create new event");
+        System.out.println("3. Manage events");
+        System.out.println("4. Manage refunds");
+        if(user.isAdmin()){
+            System.out.println("5. Create new user");
+        }
 
-        ArrayList<String> options = new ArrayList<String>();
+        ArrayList<String> options = new ArrayList<>();
         options.add("1");
         options.add("2");
         options.add("3");
+        options.add("4");
+        if(user.isAdmin()){
+            options.add("5");
+        }
 
         String option = Helpers.readOption(options);
 
-        if(option.equals("1")){
-            Event event = eventsContainer.createEvent();
-            Boolean save = eventsContainer.storeEvent(event);
-            if(save){
-                System.out.println("Event " + event.getName() + " successfully saved");
+        switch (option) {
+            case "1" -> Main.start();
+            case "2" -> {
+                Event event = eventsContainer.createEvent();
+                Boolean save = eventsContainer.storeEvent(event);
+                if (save) {
+                    System.out.println("Event " + event.getName() + " successfully saved");
+                }
+                else {
+                    System.out.println("Something went wrong, try again");
+                }
+
+                Main.home(user);
             }
-            else{
-                System.out.println("Something went wrong, try again");
+            case "3" -> {
+                System.out.println("Select event");
+
+                int index = 1;
+                ArrayList<String> eventOptions = new ArrayList<>();
+                for (Event event : eventsContainer.events) {
+                    System.out.println(index + ". " + event.getName());
+                    eventOptions.add(Integer.toString(index));
+                    index++;
+                }
+
+                String select = Helpers.readOption(eventOptions);
+                Event event = eventsContainer.events.get(Integer.parseInt(select) - 1);
+                Main.manageEvent(event);
+            }
+            case "4" -> {
+                System.out.println("");
+                int index = 1;
+                for(Event event : eventsContainer.events){
+                    for(Ticket ticket : event.getTickets()){
+                        if(!ticket.isBeeingRefunded()){continue;}
+
+                        System.out.println("---Ticket " + index + " ---");
+                        System.out.println("Event: " + event.getName());
+                        System.out.println("Token: " + ticket.getToken());
+                        System.out.println("Customer: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
+                        System.out.println("Ticket type: " + ticket.getType().getName());
+
+                        ArrayList<String> refundOptions = new ArrayList<>();
+                        refundOptions.add("1");
+                        refundOptions.add("2");
+
+                        System.out.println("");
+                        System.out.println("Confirm the refund:");
+                        System.out.println("1. Yes:");
+                        System.out.println("2. No:");
+
+                        String refundOption = Helpers.readOption(refundOptions);
+                        boolean decision = refundOption.equals("1");
+
+                        ticketsManager.refundClose(event, ticket, decision);
+
+
+                        index++;
+                    }
+                }
             }
 
-            Main.home(user);
-        }
-        else if(option.equals("2")) {
-            System.out.println("Select event");
+            case "5" -> {
+                User newUser = environment.createNewUser();
 
-            int index = 1;
-            ArrayList<String> eventOptions = new ArrayList<>();
-            for (Event event : eventsContainer.events) {
-                System.out.println(index + ". " + event.getName());
-                eventOptions.add(Integer.toString(index));
-                index++;
+                boolean save = environment.storeUser(newUser);
+                if (save) {
+                    System.out.println("User " + user.getName() + " " + user.getLastname() + " has been successfully created");
+                } else {
+                    System.out.println("Something went wrong, try again");
+                }
+
+                Main.home(user);
             }
-
-            String select = Helpers.readOption(eventOptions);
-            Event event = eventsContainer.events.get(Integer.parseInt(select) - 1);
-            Main.manageEvent(event);
-
-            TicketType ticketType = event.createNewTicketType();
-            Boolean save = event.storeTicketType(ticketType);
-
-            if(save){
-                System.out.println("Type " + ticketType.getName() + " successfully saved");
-            }
-            else{
-                System.out.println("Something went wrong, try again");
-            }
-
-            Main.home(user);
-        }
-        else if(option.equals("3")){
-            Main.start();
         }
     }
 
@@ -236,42 +274,47 @@ public class Main {
         System.out.println("Select action:");
         System.out.println("1. Create new Ticket type");
         System.out.println("2. Create new discount coupon");
-        System.out.println("3. Back");
+        System.out.println("3. Show paid tickets");
+        System.out.println("4. Back");
 
-        ArrayList<String> options = new ArrayList<String>();
+        ArrayList<String> options = new ArrayList<>();
         options.add("1");
         options.add("2");
         options.add("3");
+        options.add("4");
         String option = Helpers.readOption(options);
 
-        if(option.equals("1")){
-            TicketType ticketType = event.createNewTicketType();
-            Boolean save = event.storeTicketType(ticketType);
+        switch (option) {
+            case "1" -> {
+                System.out.println("Option 1");
+                TicketType ticketType = event.createNewTicketType();
+                Boolean save = event.storeTicketType(ticketType);
 
-            if(save){
-                System.out.println("Type " + ticketType.getName() + " successfully saved");
-            }
-            else{
-                System.out.println("Something went wrong, try again");
-            }
+                if (save) {
+                    System.out.println("Type " + ticketType.getName() + " successfully saved");
+                } else {
+                    System.out.println("Something went wrong, try again");
+                }
 
-            Main.manageEvent(event);
-        }
-        else if(option.equals("2")){
-            DiscountCoupon coupon = event.createNewDiscountCoupon();
-            Boolean save = event.storeDiscountCoupon(coupon);
-
-            if(save){
-                System.out.println("Coupon " + coupon.getCode() + " successfully saved");
+                Main.manageEvent(event);
             }
-            else{
-                System.out.println("Something went wrong, try again");
-            }
+            case "2" -> {
+                DiscountCoupon coupon = event.createNewDiscountCoupon();
+                Boolean save = event.storeDiscountCoupon(coupon);
 
-            Main.manageEvent(event);
-        }
-        else{
-            Main.start();
+                if (save) {
+                    System.out.println("Coupon " + coupon.getCode() + " successfully saved");
+                } else {
+                    System.out.println("Something went wrong, try again");
+                }
+
+                Main.manageEvent(event);
+            }
+            case "3" -> {
+                event.showPaidTickets();
+                Main.manageEvent(event);
+            }
+            default -> Main.start();
         }
 
 

@@ -158,7 +158,7 @@ public class Event {
         }
 
         Customer customer = new Customer(name, lastname, email, phone, dob);
-        return new Ticket(Helpers.randomString(10), false, coupon, customer, type);
+        return new Ticket(Helpers.randomString(10), false, false, coupon, customer, type);
     }
     public Boolean storeTicket(Ticket ticket){
         try {
@@ -170,6 +170,32 @@ public class Event {
         }
     }
 
+    public void showPaidTickets(){
+        int index = 1;
+        for (Ticket ticket : this.tickets) {
+            if (!ticket.getPaid()) { continue; }
+
+            System.out.println("");
+            System.out.println("---Ticket " + index + " ---");
+            System.out.println("Token: " + ticket.getToken());
+            System.out.println("Customer: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
+            System.out.println("Ticket type: " + ticket.getType().getName());
+            index++;
+        }
+
+        System.out.println("");
+        System.out.println("Tickets paid: "+index+"/"+this.tickets.size());
+    }
+
+    public void removeTicket(String token){
+        int index = 0;
+        for(Ticket ticket : this.tickets){
+            if(ticket.getToken().equals(token)){
+                this.tickets.remove(index);
+            }
+            index++;
+        }
+    }
 
 
     public String getName() {
