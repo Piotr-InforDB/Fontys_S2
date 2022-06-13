@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 public class Main {
 
-    public static Environment environment = new Environment(new UsersData());
-    public static EventsContainer eventsContainer = new EventsContainer(new EventsData(), new TicketTypesData(), new TicketsData(), new CouponsData());
+    public static Environment environment = new Environment(new UsersData(), new EventsData(), new TicketTypesData(), new TicketsData(), new CouponsData());
     public static TicketsManager ticketsManager = new TicketsManager(new TicketsData());
 
     public static void main(String[] args) throws IOException, ParseException {
@@ -56,16 +55,16 @@ public class Main {
 
         int index = 1;
         ArrayList<String> eventOptions = new ArrayList<>();
-        for (Event event : eventsContainer.getEvents()) {
+        for (Event event : environment.getEvents()) {
             System.out.println(index + ". " + event.getName());
             eventOptions.add(Integer.toString(index));
             index++;
         }
 
         String select = Helpers.readOption(eventOptions);
-        Event event = eventsContainer.getEvents().get(Integer.parseInt(select) - 1);
+        Event event = environment.getEvents().get(Integer.parseInt(select) - 1);
+        Ticket ticket = ticketsManager.createTicket(event);
 
-        Ticket ticket = event.createTicket();
         Boolean save = event.storeTicket(ticket);
 
         if(!save){
@@ -76,7 +75,7 @@ public class Main {
         System.out.println("Ticket has been successfully created, your ticket reference ID is: " + ticket.getToken());
         System.out.println("Would you like to pay now?");
         System.out.println("1. Yes");
-        System.out.println("1. No");
+        System.out.println("2. No");
 
 
         ArrayList<String> payOptions = new ArrayList<>();
@@ -84,7 +83,6 @@ public class Main {
         payOptions.add("2");
 
         String payOption = Helpers.readOption(payOptions);
-
         if(payOption.equals("1")){
             ticket.pay();
         }
@@ -95,7 +93,7 @@ public class Main {
         System.out.println("Input your ticket ID:");
         String token = Helpers.readLine();
 
-        for(Event event : eventsContainer.getEvents()){
+        for(Event event : environment.getEvents()){
             for(Ticket ticket : event.getTickets()){
                 if(ticket.getToken().equals(token)){
                     Main.showTicket(event, ticket);
@@ -111,7 +109,7 @@ public class Main {
             System.out.println("---Ticket is currently beeing refunded!---");
         }
 
-        eventsContainer.showEventInfo(event);
+        environment.showEventInfo(event);
         ticketsManager.showTicketInfo(ticket);
 
         if(ticket.isBeeingRefunded()){
@@ -148,7 +146,6 @@ public class Main {
 
         Main.tickets();
     }
-
 
 
     public static void login() throws IOException, ParseException {
@@ -195,8 +192,8 @@ public class Main {
         switch (option) {
             case "1" -> Main.start();
             case "2" -> {
-                Event event = eventsContainer.createEvent();
-                Boolean save = eventsContainer.storeEvent(event);
+                Event event = environment.createEvent();
+                Boolean save = environment.storeEvent(event);
                 if (save) {
                     System.out.println("Event " + event.getName() + " successfully saved");
                 }
@@ -211,20 +208,20 @@ public class Main {
 
                 int index = 1;
                 ArrayList<String> eventOptions = new ArrayList<>();
-                for (Event event : eventsContainer.events) {
+                for (Event event : environment.events) {
                     System.out.println(index + ". " + event.getName());
                     eventOptions.add(Integer.toString(index));
                     index++;
                 }
 
                 String select = Helpers.readOption(eventOptions);
-                Event event = eventsContainer.events.get(Integer.parseInt(select) - 1);
+                Event event = environment.events.get(Integer.parseInt(select) - 1);
                 Main.manageEvent(event);
             }
             case "4" -> {
                 System.out.println("");
                 int index = 1;
-                for(Event event : eventsContainer.events){
+                for(Event event : environment.events){
                     for(Ticket ticket : event.getTickets()){
                         if(!ticket.isBeeingRefunded()){continue;}
 
@@ -287,7 +284,7 @@ public class Main {
         switch (option) {
             case "1" -> {
                 System.out.println("Option 1");
-                TicketType ticketType = event.createNewTicketType();
+                TicketType ticketType = ticketsManager.createNewTicketType();
                 Boolean save = event.storeTicketType(ticketType);
 
                 if (save) {
@@ -299,7 +296,7 @@ public class Main {
                 Main.manageEvent(event);
             }
             case "2" -> {
-                DiscountCoupon coupon = event.createNewDiscountCoupon();
+                DiscountCoupon coupon = ticketsManager.createNewDiscountCoupon();
                 Boolean save = event.storeDiscountCoupon(coupon);
 
                 if (save) {

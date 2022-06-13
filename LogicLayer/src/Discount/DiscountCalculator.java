@@ -14,21 +14,28 @@ public class DiscountCalculator{
     }
 
     public double calcNewPrice(){
-        DecimalFormat df = new DecimalFormat("0.00");
-        double price = this.ticket.getType().getPrice();
+        double price = 0;
 
         if(this.ticket.getType().isStatic()){
             return this.ticket.getType().getPrice();
         }
 
+        int validRules = 0;
         for(IDiscountRule rule : this.rules){
             if(rule.isValid(this.ticket)){
-                price = rule.calcNewPrice(this.ticket);
-}
+                validRules++;
+                price += rule.calcNewPrice(this.ticket);
+            }
         }
 
+        if(validRules > 0){
+            price = price / validRules;
+        }
+        else{
+            price = ticket.getType().getPrice();
+        }
 
-        return Double.parseDouble(df.format(price));
+        return Math.round(price * 100.00) / 100.00;
     }
 
 

@@ -18,9 +18,8 @@ public class Ticket {
 
     public void pay(){
         DiscountCalculator calculator = new DiscountCalculator(this);
-
         double price = calculator.calcNewPrice();
-        System.out.println("You can pay € "+price+" for the ticket using this link: " + this.generatePaymentLink());
+        System.out.println("You can pay € "+ Double.toString(price) +" for the ticket using this link: " + this.generatePaymentLink());
     }
     public void refundInit(){
         this.isBeeingRefunded = true;
