@@ -191,7 +191,7 @@ public class Main {
         System.out.println("First name:");
         String name = Helpers.readLine();
 
-        System.out.println("First name:");
+        System.out.println("Last name:");
         String lastname = Helpers.readLine();
 
         System.out.println("Email:");
@@ -441,7 +441,7 @@ public class Main {
         String name = Helpers.readLine();
 
         System.out.println("Event date YYYY-mm-dd");
-        LocalDate date = Helpers.readDate();
+        LocalDate date = Helpers.readUpcominDate();
 
         System.out.println("Start time");
         LocalTime start = Helpers.readTime();

@@ -6,13 +6,21 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 public class Helpers {
 
     public static String readLine() throws IOException {
-        System.out.print(">");
-        return (new BufferedReader(new InputStreamReader(System.in))).readLine();
+        while(true){
+            System.out.print(">");
+            String line = (new BufferedReader(new InputStreamReader(System.in))).readLine();
+            if(line.equals("")){
+                System.out.println("Input can't be empty");
+                continue;
+            }
+            return line;
+        }
     }
     public static int readInt() throws IOException {
         while(true){
@@ -33,6 +41,23 @@ public class Helpers {
                 continue;
             }
             return LocalDate.parse(option);
+        }
+    }
+    public static LocalDate readUpcominDate() throws IOException {
+        while(true){
+            String option = Helpers.readLine();
+            if(!isDate(option)){
+                System.out.println("Invalid date");
+                continue;
+            }
+            LocalDate date = LocalDate.parse(option);
+
+            if(date.isBefore(LocalDate.now())){
+                System.out.println("can't use date from the past");
+                continue;
+            }
+
+            return date;
         }
     }
     public static LocalTime readTime() throws IOException {
