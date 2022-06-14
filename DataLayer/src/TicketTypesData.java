@@ -2,9 +2,9 @@ import java.util.ArrayList;
 
 public class TicketTypesData implements IDataModel {
 
-    public ArrayList<TicketType> get(){
+    public ArrayList<TicketType> get(int eventId){
 
-//        todo change to sql query
+//        ToDo: change to sql query, fetch all ticketTypes with corresponding event id
 
         ArrayList<TicketType> ticketTypes = new ArrayList<>();
 

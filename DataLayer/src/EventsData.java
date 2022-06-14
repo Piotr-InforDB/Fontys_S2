@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class EventsData implements IDataModel {
 
-    public ArrayList<Event> get(){
+    public ArrayList<Event> get(int environmentId){
 
-        //todo change to sql query
+//        ToDo: change to sql query, fetch all eventrs with corresponding environment id
+
         ArrayList<Event> events = new ArrayList<>();
 
         events.add(
@@ -37,4 +38,5 @@ public class EventsData implements IDataModel {
         return events;
 
     }
+
 }

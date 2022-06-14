@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
-public interface IDataModel {
+public interface IDataModel{
 
-    public <T> ArrayList<T> get();
-
+    <T> ArrayList<T> get(int id);
 }

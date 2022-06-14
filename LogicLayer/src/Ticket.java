@@ -16,14 +16,12 @@ public class Ticket {
         this.type = type;
     }
 
-    public void pay(){
+    public double calcPrice(){
         DiscountCalculator calculator = new DiscountCalculator(this);
-        double price = calculator.calcNewPrice();
-        System.out.println("You can pay € "+ Double.toString(price) +" for the ticket using this link: " + this.generatePaymentLink());
+        return calculator.calcNewPrice();
     }
     public void refundInit(){
         this.isBeeingRefunded = true;
-        System.out.println("Refund has been initiated.");
     }
     public void refundClose(){
         this.isBeeingRefunded = false;

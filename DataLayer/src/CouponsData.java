@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class CouponsData implements IDataModel {
 
-    public ArrayList<DiscountCoupon> get(){
+    public ArrayList<DiscountCoupon> get(int eventId){
 
-        //todo change to sql query
+//        ToDo: change to sql query, fetch all coupons with corresponding event id
+
         ArrayList<DiscountCoupon> coupons = new ArrayList<>();
 
         coupons.add(new DiscountCoupon("FREE", 99.99));
