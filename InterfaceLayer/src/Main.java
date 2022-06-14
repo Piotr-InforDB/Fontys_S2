@@ -224,6 +224,9 @@ public class Main {
                 }
             }
         }
+        if(coupon == null && cOption.equals("1")){
+            System.out.println("Invalid coupon");
+        }
 
         Customer customer = ticketsManager.createCustomer(name, lastname, email, phone, dob);
         return ticketsManager.createTicket(coupon, customer, type);
