@@ -9,6 +9,7 @@ public class Event {
     private IDataModel ticketsData;
     private IDataModel couponsData;
 
+    private int id;
     private String name;
     private LocalDate date;
     private LocalTime startTime;
@@ -25,6 +26,7 @@ public class Event {
             LocalTime startTime,
             LocalTime endTime,
             String location,
+
             IDataModel ticketTypesData,
             IDataModel ticketsData,
             IDataModel couponsData
@@ -33,9 +35,9 @@ public class Event {
         this.ticketsData = ticketsData;
         this.couponsData = couponsData;
 
-        this.ticketTypes = this.ticketTypesData.get();
-        this.tickets = this.ticketsData.get();
-        this.coupons = this.couponsData.get();
+        this.ticketTypes = this.ticketTypesData.get(this.id);
+        this.tickets = this.ticketsData.get(this.id);
+        this.coupons = this.couponsData.get(this.id);
 
         this.name = name;
         this.date = date;
@@ -75,23 +77,6 @@ public class Event {
         catch(Exception e){
             return false;
         }
-    }
-
-    public void showPaidTickets(){
-        int index = 1;
-        for (Ticket ticket : this.tickets) {
-            if (!ticket.getPaid()) { continue; }
-
-            System.out.println("");
-            System.out.println("---Ticket " + index + " ---");
-            System.out.println("Token: " + ticket.getToken());
-            System.out.println("Customer: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
-            System.out.println("Ticket type: " + ticket.getType().getName());
-            index++;
-        }
-
-        System.out.println("");
-        System.out.println("Tickets paid: "+index+"/"+this.tickets.size());
     }
 
     public void removeTicket(String token){

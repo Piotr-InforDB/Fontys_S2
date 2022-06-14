@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/InterfaceLayer/InterfaceLayer.iml" filepath="$PROJECT_DIR$/InterfaceLayer/InterfaceLayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/LogicLayer/LogicLayer.iml" filepath="$PROJECT_DIR$/LogicLayer/LogicLayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/Tickets.iml" filepath="$PROJECT_DIR$/Tickets.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../UnitTests/UnitTests.iml" filepath="$PROJECT_DIR$/../UnitTests/UnitTests.iml" />
     </modules>
   </component>
 </project>

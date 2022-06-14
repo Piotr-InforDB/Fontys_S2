@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class Main {
@@ -10,7 +12,6 @@ public class Main {
     public static void main(String[] args) throws IOException, ParseException {
         Main.start();
     }
-
     public static void start() throws IOException, ParseException {
         System.out.println("");
         System.out.println("Select action:");
@@ -63,8 +64,10 @@ public class Main {
 
         String select = Helpers.readOption(eventOptions);
         Event event = environment.getEvents().get(Integer.parseInt(select) - 1);
-        Ticket ticket = ticketsManager.createTicket(event);
 
+
+
+        Ticket ticket = Main.createTicket(event);
         Boolean save = event.storeTicket(ticket);
 
         if(!save){
@@ -84,11 +87,12 @@ public class Main {
 
         String payOption = Helpers.readOption(payOptions);
         if(payOption.equals("1")){
-            ticket.pay();
+            System.out.println("You can pay € "+ ticket.calcPrice() +" for the ticket using this link: " + ticket.generatePaymentLink());
         }
 
         Main.start();
     }
+
     public static void findTicket() throws IOException, ParseException {
         System.out.println("Input your ticket ID:");
         String token = Helpers.readLine();
@@ -109,8 +113,28 @@ public class Main {
             System.out.println("---Ticket is currently beeing refunded!---");
         }
 
-        environment.showEventInfo(event);
-        ticketsManager.showTicketInfo(ticket);
+
+        System.out.println("");
+        System.out.println("--Event--");
+        System.out.println("Name: " + event.getName());
+        System.out.println("Date: " + event.getDate());
+        System.out.println("Time: " + event.getStartTime() + " " + event.getEndTime());
+        System.out.println("Location: " + event.getLocation());
+
+        System.out.println("");
+        System.out.println("--Ticket--");
+        System.out.println("Token: " + ticket.getToken());
+        System.out.println("Paid: " + (ticket.getPaid() ? "Yes" : "No"));
+        if(ticket.getCoupon() != null){
+            System.out.println("Coupon: " + ticket.getCoupon().getCode() + ", "+ticket.getCoupon().getDiscountPercentage()+"% discount");
+        }
+        System.out.println("Ticket type: " + ticket.getType().getName());
+        System.out.println("");
+        System.out.println("--Customer--");
+        System.out.println("Name: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
+        System.out.println("Email: " + ticket.getCustomer().getEmail());
+        System.out.println("Phone: " + ticket.getCustomer().getPhone());
+        System.out.println("Date of birth: " + ticket.getCustomer().getDateOfBirth());
 
         if(ticket.isBeeingRefunded()){
             Main.tickets();
@@ -137,14 +161,81 @@ public class Main {
         }
         else if(option.equals("2")){
             if(!ticket.getPaid()){
-                ticket.pay();
+                System.out.println("You can pay € "+ ticket.calcPrice() +" for the ticket using this link: " + ticket.generatePaymentLink());
             }
             else{
                 ticket.refundInit();
+                System.out.println("Refund has been initiated.");
             }
         }
 
         Main.tickets();
+    }
+
+    public static Ticket createTicket(Event event) throws IOException {
+        System.out.println("Select a ticket type:");
+
+        int index = 1;
+        ArrayList<String> eventOptions = new ArrayList<>();
+        for (TicketType tp : event.getTicketTypes()) {
+            System.out.println(index + ". " + tp.getName() + " €"+tp.getPrice());
+            eventOptions.add(Integer.toString(index));
+            index++;
+        }
+
+        String select = Helpers.readOption(eventOptions);
+        TicketType type = event.getTicketTypes().get(Integer.parseInt(select) - 1);
+
+        System.out.println(type.getName());
+
+        System.out.println("First name:");
+        String name = Helpers.readLine();
+
+        System.out.println("First name:");
+        String lastname = Helpers.readLine();
+
+        System.out.println("Email:");
+        String email = Helpers.readLine();
+
+        System.out.println("Phone:");
+        String phone = Helpers.readLine();
+
+        System.out.println("Date of birth:");
+        LocalDate dob = Helpers.readDate();
+
+        System.out.println("Do you have a coupoon?:");
+        System.out.println("1. Yes");
+        System.out.println("2. No");
+
+        ArrayList<String> options = new ArrayList<String>();
+        options.add("1");
+        options.add("2");
+
+        String cOption = Helpers.readOption(options);
+
+        DiscountCoupon coupon = null;
+        if(cOption.equals("1")){
+            System.out.println("Enter your coupon:");
+            String code = Helpers.readLine();
+            for(DiscountCoupon c : event.getCoupons()){
+                if (c.getCode().equals(code)){
+                    coupon = c;
+                    System.out.println("Coupon for "+coupon.getDiscountPercentage()+"% discount has been applied");
+                }
+            }
+        }
+
+        Customer customer = ticketsManager.createCustomer(name, lastname, email, phone, dob);
+        return ticketsManager.createTicket(coupon, customer, type);
+    }
+    public static DiscountCoupon createNewDiscountCoupon() throws IOException {
+        System.out.println("Coupon code:");
+        String code = Helpers.readLine();
+
+        System.out.println("Coupon discount percentage:");
+        double discount = Helpers.readDouble();
+
+        return ticketsManager.createNewDiscountCoupon(code, discount);
     }
 
 
@@ -159,11 +250,10 @@ public class Main {
 
         User user = environment.login(email, pass);
 
-        if(user.getEmail().equals("failed_user")){
+        if(user == null){
             System.out.println("Invalid credentials");
             Main.login();
         }
-
         Main.home(user);
     }
     public static void home(User user) throws IOException, ParseException {
@@ -192,7 +282,7 @@ public class Main {
         switch (option) {
             case "1" -> Main.start();
             case "2" -> {
-                Event event = environment.createEvent();
+                Event event = Main.createEvent();
                 Boolean save = environment.storeEvent(event);
                 if (save) {
                     System.out.println("Event " + event.getName() + " successfully saved");
@@ -250,11 +340,11 @@ public class Main {
                     }
                 }
             }
-
             case "5" -> {
-                User newUser = environment.createNewUser();
 
+                User newUser = Main.createNewUser();
                 boolean save = environment.storeUser(newUser);
+
                 if (save) {
                     System.out.println("User " + user.getName() + " " + user.getLastname() + " has been successfully created");
                 } else {
@@ -265,7 +355,6 @@ public class Main {
             }
         }
     }
-
     public static void manageEvent(Event event) throws IOException, ParseException {
         System.out.println("");
         System.out.println("Select action:");
@@ -284,7 +373,7 @@ public class Main {
         switch (option) {
             case "1" -> {
                 System.out.println("Option 1");
-                TicketType ticketType = ticketsManager.createNewTicketType();
+                TicketType ticketType = Main.createNewTicketType();
                 Boolean save = event.storeTicketType(ticketType);
 
                 if (save) {
@@ -296,7 +385,7 @@ public class Main {
                 Main.manageEvent(event);
             }
             case "2" -> {
-                DiscountCoupon coupon = ticketsManager.createNewDiscountCoupon();
+                DiscountCoupon coupon = Main.createNewDiscountCoupon();
                 Boolean save = event.storeDiscountCoupon(coupon);
 
                 if (save) {
@@ -308,7 +397,7 @@ public class Main {
                 Main.manageEvent(event);
             }
             case "3" -> {
-                event.showPaidTickets();
+                Main.showPaidTickets(event);
                 Main.manageEvent(event);
             }
             default -> Main.start();
@@ -316,6 +405,95 @@ public class Main {
 
 
 
+
+    }
+    public static User createNewUser() throws IOException {
+        System.out.println("");
+
+        System.out.println("Name:");
+        String name = Helpers.readLine();
+
+        System.out.println("Lastname:");
+        String lastname = Helpers.readLine();
+
+        System.out.println("Email:");
+        String email = Helpers.readLine();
+
+        System.out.println("Password:");
+        String password = Helpers.readLine();
+
+        System.out.println("Is the user an admin:");
+        System.out.println("1. Yes");
+        System.out.println("1. No");
+
+        ArrayList<String> options = new ArrayList<>();
+        options.add("1");
+        options.add("2");
+
+        String option = Helpers.readOption(options);
+
+        boolean isAdmin = option.equals("1");
+
+        return environment.createNewUser(name, lastname, email, password, isAdmin);
+    }
+    public static Event createEvent() throws IOException, ParseException {
+        System.out.println("Event name");
+        String name = Helpers.readLine();
+
+        System.out.println("Event date YYYY-mm-dd");
+        LocalDate date = Helpers.readDate();
+
+        System.out.println("Start time");
+        LocalTime start = Helpers.readTime();
+
+        System.out.println("End time");
+        LocalTime end = Helpers.readTime();
+
+        System.out.println("Event location");
+        String location = Helpers.readLine();
+
+        return environment.createEvent(name, date, start, end, location);
+    }
+    public static TicketType createNewTicketType() throws IOException {
+        System.out.println("Ticket name:");
+        String name = Helpers.readLine();
+
+
+        System.out.println("Ticket limit:");
+        int limit = Helpers.readInt();
+
+        System.out.println("Ticket price:");
+        double price = Helpers.readDouble();
+
+        System.out.println("Is price static:");
+        System.out.println("1. Yes");
+        System.out.println("2. No");
+
+        ArrayList<String> options = new ArrayList<>();
+        options.add("1");
+        options.add("2");
+
+        String staticOption = Helpers.readOption(options);
+
+        boolean isStatic = staticOption.equals("1");
+
+        return ticketsManager.createNewTicketType(name, limit, price, isStatic);
+    }
+    public static void showPaidTickets(Event event){
+        int index = 0;
+        for (Ticket ticket : event.getTickets()) {
+            if (!ticket.getPaid()) { continue; }
+            index++;
+
+            System.out.println("");
+            System.out.println("---Ticket " + index + " ---");
+            System.out.println("Token: " + ticket.getToken());
+            System.out.println("Customer: " + ticket.getCustomer().getName() + " " + ticket.getCustomer().getLastname());
+            System.out.println("Ticket type: " + ticket.getType().getName());
+        }
+
+        System.out.println("");
+        System.out.println("Tickets paid: "+index+"/"+event.getTickets().size());
 
     }
 }

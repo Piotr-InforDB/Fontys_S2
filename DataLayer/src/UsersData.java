@@ -2,9 +2,9 @@ import java.util.ArrayList;
 
 public class UsersData implements IDataModel {
 
-    public ArrayList<User> get(){
+    public ArrayList<User> get(int environmentId){
 
-//        todo change to sql query
+//        ToDo: change to sql query, fetch all users with corresponding event id
 
         ArrayList<User> users = new ArrayList<>();
 
